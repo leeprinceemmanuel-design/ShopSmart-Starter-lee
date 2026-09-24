@@ -10,6 +10,12 @@ export function calculateCartTotal(cart) {
   return cart.reduce((total, item) => total + calculateItemSubtotal(item), 0);
 }
 
+// Adds up the quantity of every item. Starts from 0, so an empty cart returns 0.
+// Different from calculateCartTotal: this counts items, it does not add prices.
+export function calculateCartItemCount(cart) {
+  return cart.reduce((count, item) => count + item.quantity, 0);
+}
+
 export function addProductToCart(cart, product) {
   const existingItem = findCartItem(cart, product.id);
   const currentQuantity = existingItem?.quantity ?? 0;

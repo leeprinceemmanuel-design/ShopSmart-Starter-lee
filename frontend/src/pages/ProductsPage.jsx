@@ -26,9 +26,18 @@ export default function ProductsPage() {
     [products]
   );
 
+  // Clean the search text once: remove extra spaces and make it lower case.
+  // Before, this was done again for every product inside filter.
+  const query = search.trim().toLowerCase();
+
   const visibleProducts = products.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(search.trim().toLowerCase());
+    // A product matches if the query is in its name OR its description.
+    // Both are lower-cased so "Privacy" and "privacy" match the same way.
+    const matchesSearch =
+      product.name.toLowerCase().includes(query) ||
+      product.description.toLowerCase().includes(query);
     const matchesCategory = category === 'All' || product.category === category;
+    // Show the product only if BOTH the search and the category match
     return matchesSearch && matchesCategory;
   });
 

@@ -1,5 +1,10 @@
 import { createContext, useContext, useMemo, useState } from 'react';
-import { addProductToCart, calculateCartTotal, updateCartQuantity } from '../utils/cart.js';
+import {
+  addProductToCart,
+  calculateCartItemCount,
+  calculateCartTotal,
+  updateCartQuantity
+} from '../utils/cart.js';
 
 const CartContext = createContext(null);
 
@@ -36,7 +41,7 @@ export function CartProvider({ children }) {
   const value = useMemo(() => ({
     cart,
     cartMessage,
-    itemCount: cart.reduce((count, item) => count + item.quantity, 0),
+    itemCount: calculateCartItemCount(cart), // reusable function from utils/cart.js
     total: calculateCartTotal(cart),
     addToCart,
     setQuantity,
