@@ -1,10 +1,15 @@
+// frontend/src/pages/CheckoutPage.jsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import StatusMessage from '../components/StatusMessage.jsx';
 import { useCart } from '../context/CartContext.jsx';
 import { api } from '../services/api.js';
+// Reuse the subtotal rule the cart total already uses (price x quantity).
+import { calculateItemSubtotal } from '../utils/cart.js';
 
 export default function CheckoutPage() {
+  // "cart" and "total" come straight from the shared cart.
+  // This page does not keep its own copy of the items.
   const { cart, total, clearCart } = useCart();
   const [form, setForm] = useState({ customerName: '', email: '', address: '' });
   const [submitting, setSubmitting] = useState(false);
@@ -55,7 +60,19 @@ export default function CheckoutPage() {
         <label>Delivery address<textarea name="address" value={form.address} onChange={updateField} minLength="10" maxLength="300" required /></label>
         <button disabled={submitting}>{submitting ? 'Submitting order…' : 'Place simulated order'}</button>
       </form>
-      <aside className="summary"><h2>Amount due</h2><p className="summary-total"><span>Total</span><strong>₱{total.toLocaleString('en-PH')}</strong></p><small>No actual payment will be collected.</small></aside>
+      <aside className="summary">
+        <h2>Order review</h2>
+        {/* One row per cart item: name, quantity, and line subtotal.
+            key={item.productId} lets React tell the rows apart. */}
+        {cart.map((item) => (
+          <p key={item.productId}>
+            <span>{item.name} × {item.quantity}</span>
+            <strong>₱{calculateItemSubtotal(item).toLocaleString('en-PH')}</strong>
+          </p>
+        ))}
+        <p className="summary-total"><span>Total</span><strong>₱{total.toLocaleString('en-PH')}</strong></p>
+        <small>No actual payment will be collected.</small>
+      </aside>
     </section>
   );
 }
