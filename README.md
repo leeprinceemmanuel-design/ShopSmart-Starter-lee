@@ -1,6 +1,6 @@
 # ShopSmart Starter Application
 
-ShopSmart is a working educational e-commerce starter for a six-week BSIT full-stack AI application development sequence. It contains a React front end, Express REST API, PostgreSQL database through Prisma, shopping cart, simulated checkout and rule-based product assistant.
+ShopSmart is a working educational e-commerce starter for a six-week BSIT full-stack AI application development sequence. It contains a React front end, Express REST API, PostgreSQL database through Prisma, shopping cart, simulated checkout and a grounded product assistant (Google Gemini draft, checked against the catalog, with a rule-based fallback).
 
 The application intentionally leaves several improvements for later lessons. It is for classroom use and must not process real payments or personal customer data.
 
@@ -323,3 +323,21 @@ Confirm that the front end uses http://localhost:5173 and that `FRONTEND_URL=htt
 | `npm run db:studio` | Open the Prisma database viewer |
 
 Read `docs/TEACHING_ROADMAP.md` for the weekly improvement plan.
+
+## AI assistant setup
+
+The assistant works without a key by using its rule-based answers. To turn on AI drafts:
+
+1. Create a free API key at https://aistudio.google.com/apikey.
+2. Open `backend/.env` and add the lines below. Do not put the key anywhere else, and never commit `backend/.env`.
+
+   ```text
+   GEMINI_API_KEY=your-key-here
+   GEMINI_MODEL=gemini-3.8-flash
+   GEMINI_TIMEOUT_MS=8000
+   ```
+
+3. Restart `npm run dev`.
+4. If the key is working, the terminal shows no `[assistant] using rule-based answer` line after you ask a question, and the answer page shows no fallback notice.
+
+To test a provider failure, change `GEMINI_TIMEOUT_MS` to `1`, restart and ask again. Change it back afterwards.
