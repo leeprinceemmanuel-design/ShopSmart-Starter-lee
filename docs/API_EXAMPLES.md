@@ -39,7 +39,7 @@ Content-Type: application/json
 
 The server ignores prices from the browser and reads authoritative prices from PostgreSQL.
 
-## Ask the starter assistant
+## Ask the assistant
 
 ```http
 POST http://localhost:3000/api/assistant/questions
@@ -49,3 +49,16 @@ Content-Type: application/json
   "question": "Which keyboard is below ₱2,000?"
 }
 ```
+
+Example response:
+
+```json
+{
+  "answer": "The Compact Mechanical Keyboard (₱1,850) is in stock and is below your ₱2,000 budget.",
+  "recommendedProducts": [{ "id": 2, "name": "Compact Mechanical Keyboard", "price": 1850, "category": "Accessories" }],
+  "sources": [{ "type": "product", "id": 2, "name": "Compact Mechanical Keyboard" }],
+  "answerSource": "ai"
+}
+```
+
+`answerSource` is `ai` for a checked AI draft, `rules` for the rule-based fallback (this also includes a `notice`), and `catalog` for a no match answer, where the provider is not called.

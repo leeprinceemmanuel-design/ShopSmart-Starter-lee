@@ -22,6 +22,7 @@ export const api = {
   getProduct: (id) => request(`/products/${id}`),
   createOrder: (order) => request('/orders', { method: 'POST', body: JSON.stringify(order) }),
   askAssistant: (question) => request('/assistant/questions', {
-    method: 'POST', body: JSON.stringify({ question })
+    // The browser stops waiting after 20 seconds, so the page can never load forever.
+    method: 'POST', body: JSON.stringify({ question }), signal: AbortSignal.timeout(20000)
   })
 };
