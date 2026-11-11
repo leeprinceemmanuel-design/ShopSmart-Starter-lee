@@ -58,7 +58,6 @@ Follow `README.md` from "Set up the ShopSmart project". Extra steps for this rel
 
 | Member | Test they ran | Contribution | Issue they can explain |
 | --- | --- | --- | --- |
-| _(name)_ | | | |
-| _(name)_ | | | |
-| _(name)_ | | | |
-| _(name)_ | | | |
+| Lee, Prince Emmanuel C. | TC-06 Stock: put all 8 keyboards in the cart, let another fictional customer buy 1, then checked out and saw the 409 "Only 7 unit(s)…" refusal with the cart and stock unchanged. Also ran the final Chrome smoke test on port 5173 (order #10). | Ran the baseline `npm run check`; fixed D1 (request body in logs) and D3 (baseline migration `0_init`); made the branch and PR #5. | D1: why a broken checkout body put the customer's name, email and address in the server log, and how logging only `[traceId] status code` fixes it. |
+| John Micheal Agustin | TC-04 invalid checkout (email `juan.test@example` refused with 422) and TC-08 API down (stopped the API and checked that every page stops loading and shows a message). | Recorded the expected and observed results in this test record; fixed D4/D5 in `frontend/src/services/api.js` with 5 tests in `api.test.js`. | D4: why the page said "Failed to fetch" when the server was down, and how `api.js` now turns that into "ShopSmart could not be reached…". |
+| Jerry Jr Busa | TC-07 and TC-09 assistant: keyboard question with source #8, honest "could not find" for drones, and the AI timeout fallback with its notice. Also API-04 search for "privacy". | Wrote the deployment plan and diagram (`DEPLOYMENT_PLAN.md`); fixed D2 (API search now checks name or description). | D3: why `prisma migrate deploy` would create no tables without committed migrations, and why `db:seed` must never run on staging after the first order. |
