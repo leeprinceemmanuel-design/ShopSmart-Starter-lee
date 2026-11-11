@@ -27,7 +27,7 @@
 - After a stock refusal the cart still allows the old quantity; the shopper must lower it (the server never oversells).
 - `/api/health` does not check the database.
 - `trust proxy` must be set when the API is hosted (see deployment plan).
-- Browser UI tests ran on a QA copy of the same frontend on port 5174 because the test browser blocks calls from port 5173 to 3000. The team should repeat the smoke test in Chrome on port 5173 and add that screenshot.
+- Most browser UI tests ran on a QA copy of the same frontend on port 5174, because the automated test browser blocks calls from port 5173 to 3000. The final smoke test was then repeated by hand in Chrome on the real port 5173 and passed (see the last row of the smoke test table).
 
 Full list with impact and safe workarounds: `TEST_RECORD.md`, section "Unresolved issues".
 
@@ -52,6 +52,7 @@ Follow `README.md` from "Set up the ShopSmart project". Extra steps for this rel
 | Data kept | 6 products, 8 orders; orders from 24 Sep and 3 Nov still present; migration status up to date |
 | Secrets | No `.env` tracked; key and DB password not in Git history or in `frontend/dist` |
 | Privacy | Only fictional names and `@example.com` emails used |
+| Chrome on http://localhost:5173 (11 Nov 2026, 17:11–17:22) | Pass: `GET http://localhost:3000/api/products` → 200 OK with `Access-Control-Allow-Origin: http://localhost:5173`; cart 2 × lamp = ₱1,800; order #10, ₱1,800.00; assistant answered Compact Mechanical Keyboard ₱1,850 with source #8; health `{"status":"ok"}` (`RC-chrome-5173-*.png`) |
 
 ## Team record
 

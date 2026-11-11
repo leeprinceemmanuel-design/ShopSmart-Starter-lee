@@ -18,7 +18,7 @@ Evidence files are in `docs/release-evidence/`. Screenshots start with `UI-` (be
 3. Browser cases: the customer journey was clicked through in a browser. The page text and screenshot were captured after each action.
 4. Failure cases: the API was stopped for 75 seconds (API outage), then restarted with `GEMINI_TIMEOUT_MS=1` set for that process only (AI provider outage). `backend/.env` was not edited.
 
-**Test-environment note (not an app defect):** the in-app test browser blocks a page on port 5173 from calling port 3000 (`net::ERR_BLOCKED_BY_CLIENT`). So the browser cases ran on a QA copy of the **same frontend source** served on port 5174, which forwards `/api` to the API on port 3000. The QA config (`.qa-local/vite.qa.config.mjs`) is local only and not committed. CORS for the real setup (5173 → 3000) was checked by API case SEC-01. The team should repeat the short smoke test once in Chrome on http://localhost:5173 and add a screenshot.
+**Test-environment note (not an app defect):** the in-app test browser blocks a page on port 5173 from calling port 3000 (`net::ERR_BLOCKED_BY_CLIENT`). So the browser cases ran on a QA copy of the **same frontend source** served on port 5174, which forwards `/api` to the API on port 3000. The QA config (`.qa-local/vite.qa.config.mjs`) is local only and not committed. CORS for the real setup (5173 → 3000) was checked by API case SEC-01. The short smoke test was then repeated by hand in Chrome on the real http://localhost:5173 (see "Smoke test in Chrome on port 5173" below).
 
 ## Activity 1 – Baseline
 
@@ -197,6 +197,16 @@ Priority follows the challenge: data exposure and broken deployment first.
 
 - **Repro:** see TC-04.
 - **Fix (`e407e7f`):** the API already returns `details.fieldErrors`; `api.js` adds "Please check: email address." using the form's own field names. Test in `api.test.js`. TC-04 passes after fix.
+
+### Smoke test in Chrome on port 5173 (after fixes)
+
+| Step | Expected | Observed | Evidence | Decision |
+| --- | --- | --- | --- | --- |
+| Open http://localhost:5173 with DevTools → Network, cache disabled | Products request goes to port 3000 and succeeds | `http://localhost:3000/api/products`, 200 OK, `Access-Control-Allow-Origin: http://localhost:5173`; 6 cards with live stock (mouse 5, keyboard 6, lamp 9) | `RC-chrome-5173-products-network.png` | Pass |
+| Add USB-C Study Lamp, press + | Qty 2, total ₱1,800 | Qty 2, Items 2, Total ₱1,800 | (seen on screen) | Pass |
+| Checkout with fictional details | One order, ₱1,800.00, cart emptied | Order #10, Total ₱1,800.00, Cart (0) | `RC-chrome-5173-checkout.png` | Pass |
+| Assistant: "Which keyboard is below ₱2,000?" | Keyboard ₱1,850 with source | AI answer, Compact Mechanical Keyboard ₱1,850, source #8 | `RC-chrome-5173-assistant.png` | Pass |
+| http://localhost:3000/api/health | `{"status":"ok"}` | `{"status":"ok"}` | `RC-chrome-5173-health.png` | Pass |
 
 ### Final check after fixes
 
