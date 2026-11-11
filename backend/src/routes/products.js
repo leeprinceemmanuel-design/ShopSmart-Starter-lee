@@ -2,11 +2,24 @@ import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
 const router = Router();
 
+// Same rule as the search box on the products page: a word matches the
+// product name OR its description, ignoring upper/lower case.
+export function buildProductWhere(search) {
+  const text = String(search ?? '').trim();
+  if (!text) return { active: true };
+  return {
+    active: true,
+    OR: [
+      { name: { contains: text, mode: 'insensitive' } },
+      { description: { contains: text, mode: 'insensitive' } }
+    ]
+  };
+}
+
 router.get('/', async (request, response, next) => {
   try {
-    const search = String(request.query.search || '').trim();
     const products = await prisma.product.findMany({
-      where: { active: true, ...(search ? { name: { contains: search, mode: 'insensitive' } } : {}) },
+      where: buildProductWhere(request.query.search),
       orderBy: { id: 'asc' }
     });
     response.json({ products: products.map((p) => ({ ...p, price: Number(p.price) })) });
