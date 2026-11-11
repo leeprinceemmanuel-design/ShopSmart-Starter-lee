@@ -5,7 +5,7 @@
 | Version and date | v1.1.0-rc.1, 11 November 2026 |
 | Code submitted | Branch `feature/release-candidate-qa`, based on `main` at `9f838f8`. Fix commits: `e17b50c`, `39dabcb`, `452660e`, `e407e7f`. _(If you submit a ZIP, write the final commit hash here: `git rev-parse --short HEAD`.)_ |
 | Deployment status | **Local release candidate only.** No hosting or cloud database is approved yet, so live staging was **not** done. The staging plan is in `DEPLOYMENT_PLAN.md`. |
-| Final check | `npm run check` passed: lint OK, frontend 10/10 tests, backend 31/31 tests, build OK (`release-evidence/check-after-fix.log`) |
+| Final check | `npm run check` passed: lint OK, frontend 10/10 tests, backend 31/31 tests, build OK (`release-evidence/check-after-fix-log.txt`) |
 
 ## Working features (verified on 11 Nov 2026)
 

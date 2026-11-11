@@ -13,7 +13,7 @@ Evidence files are in `docs/release-evidence/`. Screenshots start with `UI-` (be
 
 ## How the tests were run
 
-1. Baseline: `npm run check` and `npx prisma migrate status` from the project root before any change. Log: `baseline-BEFORE-FIXES.log`.
+1. Baseline: `npm run check` and `npx prisma migrate status` from the project root before any change. Log: `baseline-BEFORE-FIXES-log.txt`.
 2. API cases: a test script called every route with fixed inputs and wrote expected and observed results to JSON (`api-tests-baseline.json` before fixes, `api-tests-after-fix.json` after fixes). It only uses the public API, never the database directly.
 3. Browser cases: the customer journey was clicked through in a browser. The page text and screenshot were captured after each action.
 4. Failure cases: the API was stopped for 75 seconds (API outage), then restarted with `GEMINI_TIMEOUT_MS=1` set for that process only (AI provider outage). `backend/.env` was not edited.
@@ -186,7 +186,7 @@ Priority follows the challenge: data exposure and broken deployment first.
   2. Generated `backend/prisma/migrations/0_init/migration.sql` from `schema.prisma` (`migrate diff --from-empty … --script`) and added `migration_lock.toml`.
   3. Marked it as already applied on the local database: `prisma migrate resolve --applied 0_init` (this only records the migration; no table or row was changed).
   4. Added `npm run db:deploy` (`prisma migrate deploy`) and `npm run db:status`.
-- **Repeat test:** `migrate status` → "1 migration found in prisma/migrations. Database schema is up to date!" Final database check (ids, totals and dates only, no customer details): 6 products, 8 orders, 8 order items. Orders created before this session (#2 from 24 Sep and #3 from 3 Nov) are still there, so nothing was reseeded or reset. Logs: `migrations.log`, `db-counts-final.txt`, `db-orders-final.txt`, `db-status-final.log`.
+- **Repeat test:** `migrate status` → "1 migration found in prisma/migrations. Database schema is up to date!" Final database check (ids, totals and dates only, no customer details): 6 products, 8 orders, 8 order items. Orders created before this session (#2 from 24 Sep and #3 from 3 Nov) are still there, so nothing was reseeded or reset. Logs: `migrations-log.txt`, `db-counts-final.txt`, `db-orders-final.txt`, `db-status-final-log.txt`.
 
 ### D4 – Raw error text when the API is down (Medium)
 
@@ -200,7 +200,7 @@ Priority follows the challenge: data exposure and broken deployment first.
 
 ### Final check after fixes
 
-`npm run check` → exit 0: lint OK (both), frontend **10/10** tests (5 new), backend **31/31** tests (4 new), build OK. Log: `check-after-fix.log`. No test was deleted or weakened.
+`npm run check` → exit 0: lint OK (both), frontend **10/10** tests (5 new), backend **31/31** tests (4 new), build OK. Log: `check-after-fix-log.txt`. No test was deleted or weakened.
 
 ## Unresolved issues and safe temporary limits
 

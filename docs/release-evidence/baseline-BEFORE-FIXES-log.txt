@@ -1,0 +1,109 @@
+===== BASELINE Wed 11/11/2026 14:32:41.33 ===== 
+--- versions --- 
+v24.13.0
+11.6.2
+9f838f8
+--- postgres services --- 
+SERVICE_NAME: postgresql-x64-18
+DISPLAY_NAME: postgresql-x64-18 - PostgreSQL Server 18
+--- prisma migrate status --- 
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "shopsmart", schema "public" at "localhost:5432"
+
+No migration found in prisma/migrations
+
+Database schema is up to date!
+migrate-status-exit=0 
+--- npm run check --- 
+
+> shopsmart-starter@1.0.0 check
+> npm run lint --workspace frontend && npm run lint --workspace backend && npm run test && npm run build
+
+
+> shopsmart-frontend@1.0.0 lint
+> eslint .
+
+
+> shopsmart-backend@1.0.0 lint
+> eslint .
+
+
+> shopsmart-starter@1.0.0 test
+> npm run test --workspace frontend && npm run test --workspace backend
+
+
+> shopsmart-frontend@1.0.0 test
+> vitest run
+
+
+ RUN  v3.2.7 C:/xampp/htdocs/ShopSmart-Starter-lee/frontend
+
+ ✓ src/utils/cart.test.js (5 tests) 3ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  14:32:51
+   Duration  489ms (transform 35ms, setup 0ms, collect 27ms, tests 3ms, environment 0ms, prepare 168ms)
+
+
+> shopsmart-backend@1.0.0 test
+> node --test
+
+✔ only public product fields go to the provider, with price as a number (2.7482ms)
+✔ private details typed by the customer are removed from the prompt (1.1129ms)
+✔ budget numbers stay in the question (0.2921ms)
+✔ the key is sent in a header, not in the URL or body (30.0748ms)
+✔ provider problems become reason codes (1.8971ms)
+✔ a slow provider is stopped by the time limit (34.6291ms)
+✔ parseBudget extracts a peso budget (1.439ms)
+✔ rankProducts respects the budget (1.1492ms)
+✔ assistant response contains traceable sources (51.3433ms)
+✔ parseBudget does not read product details as a budget (0.7477ms)
+✔ getSearchTerms keeps product words and drops filler words (0.2133ms)
+✔ rankProducts finds the keyboard and nothing unrelated (0.2301ms)
+✔ rankProducts leaves out out-of-stock and inactive products (0.203ms)
+✔ no match: the provider is not called and nothing is invented (0.4884ms)
+✔ out of stock: the product is named as unavailable but not recommended (0.4178ms)
+✔ over budget: says the real price and recommends nothing (0.4622ms)
+✔ a checked draft is returned with database prices and matching sources (3.3395ms)
+✔ the provider sees only the selected products (1.0884ms)
+✔ verifyDraft rejects drafts that break the facts (1.8373ms)
+✔ verifyDraft rejects a real price placed on the wrong product (0.318ms)
+✔ verifyDraft allows a detail that is in the product facts (0.2132ms)
+✔ a bad draft is replaced by the rule-based answer (0.5895ms)
+✔ each provider failure ends in the rule-based answer (0.8868ms)
+✔ the log line holds a reason code, not the question or provider text (0.3813ms)
+✔ a valid classroom order passes validation (2.6308ms)
+✔ duplicate products fail order validation (0.3473ms)
+✔ an oversized assistant question fails validation (0.4027ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 323.394
+
+> shopsmart-starter@1.0.0 build
+> npm run build --workspace frontend
+
+
+> shopsmart-frontend@1.0.0 build
+> vite build
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 52 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.50 kB │ gzip:  0.31 kB
+dist/assets/index-Dsey1Inz.css    4.53 kB │ gzip:  1.53 kB
+dist/assets/index-BJ5C6htK.js   274.28 kB │ gzip: 86.90 kB
+✓ built in 996ms
+check-exit=0 
+===== DONE ===== 
