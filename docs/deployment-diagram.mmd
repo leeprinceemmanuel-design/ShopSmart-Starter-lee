@@ -1,0 +1,17 @@
+flowchart LR
+    B["Customer browser<br/>(staging testers only)"]
+    subgraph FH["Static host (frontend)"]
+      F["React + Vite build<br/>frontend/dist<br/><i>VITE_API_URL (public)</i>"]
+    end
+    subgraph AH["Node host (API)"]
+      A["Express API<br/>npm start --workspace backend<br/><i>DATABASE_URL, GEMINI_API_KEY (secret)</i><br/><i>FRONTEND_URL, NODE_ENV, PORT</i>"]
+    end
+    subgraph DH["Managed PostgreSQL"]
+      D[("shopsmart DB<br/>Product, Order, OrderItem<br/>migrations: prisma migrate deploy")]
+    end
+    G["Google Gemini API<br/>(optional AI drafts)"]
+
+    B -- "① HTTPS over internet<br/>GET pages + JS bundle" --> F
+    B -- "② HTTPS over internet<br/>fetch VITE_API_URL/api/*<br/>CORS: only FRONTEND_URL" --> A
+    A -- "③ TLS, private network if host allows<br/>DATABASE_URL" --> D
+    A -- "④ HTTPS over internet<br/>x-goog-api-key header (server only)" --> G

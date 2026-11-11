@@ -1,0 +1,94 @@
+===== npm run check Wed 11/11/2026 14:51:48.68 ===== 
+
+> shopsmart-starter@1.0.0 check
+> npm run lint --workspace frontend && npm run lint --workspace backend && npm run test && npm run build
+
+
+> shopsmart-frontend@1.0.0 lint
+> eslint .
+
+
+> shopsmart-backend@1.0.0 lint
+> eslint .
+
+
+> shopsmart-starter@1.0.0 test
+> npm run test --workspace frontend && npm run test --workspace backend
+
+
+> shopsmart-frontend@1.0.0 test
+> vitest run
+
+
+ RUN  v3.2.7 C:/xampp/htdocs/ShopSmart-Starter-lee/frontend
+
+ ✓ src/utils/cart.test.js (5 tests) 3ms
+ ✓ src/services/api.test.js (5 tests) 6ms
+
+ Test Files  2 passed (2)
+      Tests  10 passed (10)
+   Start at  14:51:52
+   Duration  482ms (transform 47ms, setup 0ms, collect 81ms, tests 9ms, environment 0ms, prepare 283ms)
+
+
+> shopsmart-backend@1.0.0 test
+> node --test
+
+✔ only public product fields go to the provider, with price as a number (1.8873ms)
+✔ private details typed by the customer are removed from the prompt (0.4241ms)
+✔ budget numbers stay in the question (0.1565ms)
+✔ the key is sent in a header, not in the URL or body (22.2148ms)
+✔ provider problems become reason codes (1.7477ms)
+✔ a slow provider is stopped by the time limit (33.3717ms)
+POST /api/orders 400 14.313 ms
+✔ a broken checkout body gets 400 INVALID_JSON and its contents are not logged or echoed (62.1187ms)
+✔ our own 4xx errors keep their customer message; unknown errors stay generic (0.8495ms)
+✔ parseBudget extracts a peso budget (6.1912ms)
+✔ rankProducts respects the budget (1.2832ms)
+✔ assistant response contains traceable sources (14.2974ms)
+✔ parseBudget does not read product details as a budget (0.7538ms)
+✔ getSearchTerms keeps product words and drops filler words (0.2545ms)
+✔ rankProducts finds the keyboard and nothing unrelated (0.2933ms)
+✔ rankProducts leaves out out-of-stock and inactive products (0.2238ms)
+✔ no match: the provider is not called and nothing is invented (0.5764ms)
+✔ out of stock: the product is named as unavailable but not recommended (0.7856ms)
+✔ over budget: says the real price and recommends nothing (0.5724ms)
+✔ a checked draft is returned with database prices and matching sources (4.0216ms)
+✔ the provider sees only the selected products (1.5116ms)
+✔ verifyDraft rejects drafts that break the facts (2.2612ms)
+✔ verifyDraft rejects a real price placed on the wrong product (0.3846ms)
+✔ verifyDraft allows a detail that is in the product facts (0.2557ms)
+✔ a bad draft is replaced by the rule-based answer (1.1521ms)
+✔ each provider failure ends in the rule-based answer (1.6771ms)
+✔ the log line holds a reason code, not the question or provider text (0.6772ms)
+✔ no search text returns every active product (1.5679ms)
+✔ search text matches the name OR the description, like the search box (4.4945ms)
+✔ a valid classroom order passes validation (2.8894ms)
+✔ duplicate products fail order validation (0.4008ms)
+✔ an oversized assistant question fails validation (0.4337ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 500.1794
+
+> shopsmart-starter@1.0.0 build
+> npm run build --workspace frontend
+
+
+> shopsmart-frontend@1.0.0 build
+> vite build
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 52 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.50 kB │ gzip:  0.31 kB
+dist/assets/index-Dsey1Inz.css    4.53 kB │ gzip:  1.53 kB
+dist/assets/index-brNqwiib.js   274.79 kB │ gzip: 87.11 kB
+✓ built in 941ms
+check-exit=0 

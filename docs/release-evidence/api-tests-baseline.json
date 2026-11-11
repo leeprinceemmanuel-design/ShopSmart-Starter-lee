@@ -1,0 +1,218 @@
+{
+  "label": "baseline",
+  "api": "http://localhost:3000/api",
+  "at": "2026-11-11T06:45:09.318Z",
+  "stockBefore": [
+    {
+      "id": 7,
+      "name": "Wireless Mouse",
+      "stock": 9
+    },
+    {
+      "id": 8,
+      "name": "Compact Mechanical Keyboard",
+      "stock": 6
+    },
+    {
+      "id": 9,
+      "name": "USB-C Study Lamp",
+      "stock": 10
+    },
+    {
+      "id": 10,
+      "name": "1080p Webcam",
+      "stock": 6
+    },
+    {
+      "id": 11,
+      "name": "Laptop Stand",
+      "stock": 9
+    },
+    {
+      "id": 12,
+      "name": "USB Headset",
+      "stock": 7
+    }
+  ],
+  "stockAfter": [
+    {
+      "id": 7,
+      "name": "Wireless Mouse",
+      "stock": 7
+    },
+    {
+      "id": 8,
+      "name": "Compact Mechanical Keyboard",
+      "stock": 6
+    },
+    {
+      "id": 9,
+      "name": "USB-C Study Lamp",
+      "stock": 10
+    },
+    {
+      "id": 10,
+      "name": "1080p Webcam",
+      "stock": 6
+    },
+    {
+      "id": 11,
+      "name": "Laptop Stand",
+      "stock": 9
+    },
+    {
+      "id": 12,
+      "name": "USB Headset",
+      "stock": 7
+    }
+  ],
+  "results": [
+    {
+      "id": "API-01",
+      "name": "GET /api/health",
+      "expected": "200 {\"status\":\"ok\"}",
+      "observed": "200 {\"status\":\"ok\"}",
+      "decision": "PASS"
+    },
+    {
+      "id": "API-02",
+      "name": "GET /api/products",
+      "expected": "200 with active products",
+      "observed": "200, 6 products: 7:Wireless Mouse(stock 9, ₱650); 8:Compact Mechanical Keyboard(stock 6, ₱1850); 9:USB-C Study Lamp(stock 10, ₱900); 10:1080p Webcam(stock 6, ₱1450); 11:Laptop Stand(stock 9, ₱1200); 12:USB Headset(stock 7, ₱1350)",
+      "decision": "PASS"
+    },
+    {
+      "id": "API-03",
+      "name": "GET /api/products?search=keyboard",
+      "expected": "200, only the keyboard",
+      "observed": "200, Compact Mechanical Keyboard",
+      "decision": "PASS"
+    },
+    {
+      "id": "API-04",
+      "name": "GET /api/products?search=privacy (word only in a description)",
+      "expected": "200, 1080p Webcam (same rule as the search box: name OR description)",
+      "observed": "200, none",
+      "decision": "FAIL"
+    },
+    {
+      "id": "API-05",
+      "name": "GET /api/products?search=zzzz-not-a-product",
+      "expected": "200 with empty list",
+      "observed": "200, 0 products",
+      "decision": "PASS"
+    },
+    {
+      "id": "API-06",
+      "name": "GET /api/products/abc",
+      "expected": "400 INVALID_PRODUCT_ID",
+      "observed": "400 INVALID_PRODUCT_ID",
+      "decision": "PASS"
+    },
+    {
+      "id": "API-07",
+      "name": "GET /api/products/999999",
+      "expected": "404 PRODUCT_NOT_FOUND",
+      "observed": "404 PRODUCT_NOT_FOUND",
+      "decision": "PASS"
+    },
+    {
+      "id": "API-08",
+      "name": "POST /api/orders with bad email + short address",
+      "expected": "422 INVALID_ORDER, no order saved",
+      "observed": "422 INVALID_ORDER fields=email,address",
+      "decision": "PASS"
+    },
+    {
+      "id": "API-09",
+      "name": "POST /api/orders with empty cart",
+      "expected": "422 INVALID_ORDER",
+      "observed": "422 INVALID_ORDER",
+      "decision": "PASS"
+    },
+    {
+      "id": "API-10",
+      "name": "POST /api/orders with the same product twice",
+      "expected": "422 INVALID_ORDER",
+      "observed": "422 INVALID_ORDER",
+      "decision": "PASS"
+    },
+    {
+      "id": "API-11",
+      "name": "POST /api/orders with unknown product",
+      "expected": "422 PRODUCT_UNAVAILABLE",
+      "observed": "422 PRODUCT_UNAVAILABLE",
+      "decision": "PASS"
+    },
+    {
+      "id": "API-12",
+      "name": "POST /api/orders quantity 10 of Wireless Mouse (stock 9)",
+      "expected": "409 INSUFFICIENT_STOCK, stock unchanged",
+      "observed": "409 INSUFFICIENT_STOCK \"Only 9 unit(s) of Wireless Mouse are available.\", stock 9 -> 9",
+      "decision": "PASS"
+    },
+    {
+      "id": "API-13",
+      "name": "POST /api/orders with broken JSON body",
+      "expected": "400 with a clear INVALID_JSON message (no parser internals)",
+      "observed": "400 INTERNAL_ERROR \"Expected double-quoted property name in JSON at position 31 (line 1 column 32)\"",
+      "decision": "FAIL"
+    },
+    {
+      "id": "API-14",
+      "name": "POST /api/orders valid: 2 x Wireless Mouse @ ₱650",
+      "expected": "201, total ₱1300, one new order, stock -2",
+      "observed": "201 order #7 total ₱1300, 1 line(s); stock 9 -> 7",
+      "decision": "PASS"
+    },
+    {
+      "id": "AI-01",
+      "name": "Assistant: \"Which keyboard is below ₱2,000?\"",
+      "expected": "Compact Mechanical Keyboard ₱1,850 with a source link",
+      "observed": "200 source=ai answer=\"The Compact Mechanical Keyboard (₱1,850) is available and in stock.\" products=[Compact Mechanical Keyboard ₱1850] sources=1 (979 ms)",
+      "decision": "PASS"
+    },
+    {
+      "id": "AI-02",
+      "name": "Assistant: \"Do you sell drones?\"",
+      "expected": "Honest \"could not find\", no products",
+      "observed": "200 source=catalog answer=\"I could not find an in-stock product matching that request in the current ShopSmart catalog.\" products=[none] sources=0 (4 ms)",
+      "decision": "PASS"
+    },
+    {
+      "id": "AI-03",
+      "name": "Assistant: \"I need a keyboard under 500 pesos\"",
+      "expected": "No match, names closest product and its real price",
+      "observed": "200 source=catalog answer=\"I could not find an in-stock product in that price range. The closest match, Compact Mechanical Keyboard, costs ₱1,850.\" products=[none] sources=0 (17 ms)",
+      "decision": "PASS"
+    },
+    {
+      "id": "AI-04",
+      "name": "Assistant: \"Something for video calls?\"",
+      "expected": "Webcam and/or headset, each with sources",
+      "observed": "200 source=ai answer=\"For video calls, the 1080p Webcam (₱1450) is in stock.\" products=[1080p Webcam ₱1450] sources=1 (1091 ms)",
+      "decision": "PASS"
+    },
+    {
+      "id": "AI-05",
+      "name": "Assistant: \"hi\" (too short)",
+      "expected": "422 INVALID_QUESTION",
+      "observed": "422 INVALID_QUESTION",
+      "decision": "PASS"
+    },
+    {
+      "id": "API-16",
+      "name": "GET /api/nope",
+      "expected": "404 ROUTE_NOT_FOUND",
+      "observed": "404 ROUTE_NOT_FOUND",
+      "decision": "PASS"
+    },
+    {
+      "id": "SEC-01",
+      "name": "CORS allow-origin header",
+      "expected": "http://localhost:5173 allowed; other origins not",
+      "observed": "localhost:5173 -> http://localhost:5173; other -> http://localhost:5173",
+      "decision": "PASS"
+    }
+  ]
+}

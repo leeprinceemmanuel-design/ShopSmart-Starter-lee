@@ -14,6 +14,14 @@ GET http://localhost:3000/api/health
 GET http://localhost:3000/api/products
 ```
 
+## Search products
+
+Matches the product name or description, ignoring upper and lower case.
+
+```http
+GET http://localhost:3000/api/products?search=privacy
+```
+
 ## One product
 
 ```http
@@ -38,6 +46,15 @@ Content-Type: application/json
 ```
 
 The server ignores prices from the browser and reads authoritative prices from PostgreSQL.
+
+Common error replies:
+
+| Status | Code | When |
+| --- | --- | --- |
+| 400 | `INVALID_JSON` | The body is not valid JSON. The body is never logged or echoed back. |
+| 409 | `INSUFFICIENT_STOCK` | A quantity is above the current stock. Nothing is saved. |
+| 422 | `INVALID_ORDER` | A field is missing or wrong; `details.fieldErrors` names the fields. |
+| 422 | `PRODUCT_UNAVAILABLE` | A product does not exist or is inactive. |
 
 ## Ask the assistant
 

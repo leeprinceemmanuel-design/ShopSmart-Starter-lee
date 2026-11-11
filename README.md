@@ -176,7 +176,18 @@ Make sure the PostgreSQL service is running. Then run:
 npm run db:migrate
 ```
 
-Prisma will connect using `backend/.env` and create the Product, Order and OrderItem tables. The migration command should report that the database is in sync.
+Prisma will connect using `backend/.env` and apply the committed migration `backend/prisma/migrations/0_init`, which creates the Product, Order and OrderItem tables. The migration command should report that the database is in sync.
+
+**Already have a ShopSmart database from before release 1.1?** Its tables were created without migration history. Do **not** run `npm run db:migrate` on it first, because Prisma would offer to reset it and delete your orders. Run this once instead, then continue:
+
+```powershell
+cd backend
+npx prisma migrate resolve --applied 0_init
+cd ..
+npm run db:status
+```
+
+`db:status` should say `Database schema is up to date!`.
 
 ### 7. Insert sample products
 
@@ -318,11 +329,20 @@ Confirm that the front end uses http://localhost:5173 and that `FRONTEND_URL=htt
 | `npm run dev` | Run front end and API |
 | `npm run check` | Lint, test and build |
 | `npm run db:generate` | Generate Prisma Client |
-| `npm run db:migrate` | Create or update database tables |
+| `npm run db:migrate` | Create or update database tables (local development only) |
+| `npm run db:deploy` | Apply committed migrations without resetting data (staging/production) |
+| `npm run db:status` | Show whether the database has every committed migration |
 | `npm run db:seed` | Reset and insert sample data |
 | `npm run db:studio` | Open the Prisma database viewer |
 
 Read `docs/TEACHING_ROADMAP.md` for the weekly improvement plan.
+
+## Release documents
+
+- `docs/RELEASE_NOTE.md`: what works, known limitations, deployment status
+- `docs/TEST_RECORD.md`: test cases with expected and observed results, defects and fixes
+- `docs/DEPLOYMENT_PLAN.md`: hosting diagram, environment settings and migration plan
+- `docs/release-evidence/`: screenshots and logs from the final checks
 
 ## AI assistant setup
 
