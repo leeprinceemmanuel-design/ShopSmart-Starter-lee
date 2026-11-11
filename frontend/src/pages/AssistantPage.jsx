@@ -12,8 +12,8 @@ export default function AssistantPage() {
   async function ask(event) {
     event.preventDefault(); setError(''); setResult(null); setLoading(true);
     try { setResult(await api.askAssistant(question)); }
-    // Errors from the server have a status and a readable message. Anything else means no answer arrived.
-    catch (caught) { setError(caught.status ? caught.message : 'ShopSmart could not be reached. Please check your connection and try again.'); }
+    // services/api.js already turns every failure (server down, timeout, server error) into a readable message.
+    catch (caught) { setError(caught.message); }
     finally { setLoading(false); }
   }
 
