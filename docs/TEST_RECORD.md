@@ -9,7 +9,7 @@
 | Test data | Fictional only: "Juan Dela Test", juan.test@example.com, "123 Sample Street, Test City"; "Maria Sample", maria.sample@example.com |
 | Recorder | _(team member who wrote the results)_ |
 
-Evidence files are in `docs/release-evidence/`. Screenshots start with `UI-` (before fixes), `FIX-` (after fixes) or `RC-` (release smoke test). Logs end in `.log` or `.json`.
+Evidence files are in `docs/release-evidence/`. Screenshots start with `UI-` (before fixes), `FIX-` (after fixes) or `RC-` (release smoke test). Logs end in `-log.txt`, `.txt` or `.json`.
 
 ## How the tests were run
 
