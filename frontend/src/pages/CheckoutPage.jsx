@@ -54,6 +54,8 @@ export default function CheckoutPage() {
     <section className="checkout-layout">
       <form onSubmit={submitOrder}>
         <p className="eyebrow">SIMULATED CHECKOUT</p><h1>Delivery information</h1>
+        {/* Privacy safeguard: the site has no sign-in, so shoppers are told not to type real details. */}
+        <p className="demo-notice">Class demo only: please use a made-up name, email and address. No real orders are shipped.</p>
         <StatusMessage type="error">{error}</StatusMessage>
         <label>Full name<input name="customerName" value={form.customerName} onChange={updateField} minLength="2" maxLength="80" required /></label>
         <label>Email address<input name="email" type="email" value={form.email} onChange={updateField} required /></label>
