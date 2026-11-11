@@ -1,10 +1,10 @@
-# ShopSmart Release Note: v1.1.0-rc.1 (local release candidate)
+# ShopSmart Release Note: v1.1.0-rc.1 (release candidate on private Render staging)
 
 | | |
 | --- | --- |
 | Version and date | v1.1.0-rc.1, 11 November 2026 |
 | Code submitted | Branch `feature/release-candidate-qa`, based on `main` at `9f838f8`. Fix commits: `e17b50c`, `39dabcb`, `452660e`, `e407e7f`. _(If you submit a ZIP, write the final commit hash here: `git rev-parse --short HEAD`.)_ |
-| Deployment status | **Local release candidate only.** No hosting or cloud database is approved yet, so live staging was **not** done. The staging plan is in `DEPLOYMENT_PLAN.md`. |
+| Deployment status | **Private staging on Render** (approved by the instructor), deployed 11 Nov 2026. Frontend: https://shopsmart-web-bxov.onrender.com · API: https://shopsmart-api-chlw.onrender.com/api/health · Free Render PostgreSQL in Singapore (expires 11 Dec 2026). Settings: `DEPLOY_RENDER.md`. |
 | Final check | `npm run check` passed: lint OK, frontend 10/10 tests, backend 31/31 tests, build OK (`release-evidence/check-after-fix-log.txt`) |
 
 ## Working features (verified on 11 Nov 2026)
@@ -26,7 +26,7 @@
 - **Cart** is not saved: a page refresh or typing a URL empties it.
 - After a stock refusal the cart still allows the old quantity; the shopper must lower it (the server never oversells).
 - `/api/health` does not check the database.
-- `trust proxy` must be set when the API is hosted (see deployment plan).
+- Hosted on Render's free plan: the API sleeps after 15 minutes idle (first visit about 1 minute), and the free database is deleted 30 days after creation (11 Dec 2026).
 - Most browser UI tests ran on a QA copy of the same frontend on port 5174, because the automated test browser blocks calls from port 5173 to 3000. The final smoke test was then repeated by hand in Chrome on the real port 5173 and passed (see the last row of the smoke test table).
 
 Full list with impact and safe workarounds: `TEST_RECORD.md`, section "Unresolved issues".
@@ -53,6 +53,22 @@ Follow `README.md` from "Set up the ShopSmart project". Extra steps for this rel
 | Secrets | No `.env` tracked; key and DB password not in Git history or in `frontend/dist` |
 | Privacy | Only fictional names and `@example.com` emails used |
 | Chrome on http://localhost:5173 (11 Nov 2026, 17:11–17:22) | Pass: `GET http://localhost:3000/api/products` → 200 OK with `Access-Control-Allow-Origin: http://localhost:5173`; cart 2 × lamp = ₱1,800; order #10, ₱1,800.00; assistant answered Compact Mechanical Keyboard ₱1,850 with source #8; health `{"status":"ok"}` (`RC-chrome-5173-*.png`) |
+
+## Staging smoke test (Render, 11 Nov 2026, 18:27–18:31 GMT+8)
+
+| Check | Pass condition | Result | Evidence |
+| --- | --- | --- | --- |
+| Health | `https://shopsmart-api-chlw.onrender.com/api/health` → `{"status":"ok"}` | Pass | `STG-05-render-health.png` |
+| Migrations + first data | Render log: "All migrations have been successfully applied." and "Database was empty. Added 6 sample products." | Pass | Render deploy log, 18:09 |
+| Products | 6 products from the Render database (mouse 12, keyboard 8, lamp 10 …) | Pass | `STG-01-render-products.png` |
+| Frontend reaches intended API | Products load on `shopsmart-web-bxov.onrender.com` only after `FRONTEND_URL` was set on the API (CORS) | Pass | `STG-01-render-products.png` |
+| Direct link | `/cart` opened directly returns the app, not "Not Found" (rewrite `/*` → `/index.html`) | Pass | checked 18:22 |
+| Cart + checkout | 2 × USB-C Study Lamp = ₱1,800; demo notice shown; order **#1**, ₱1,800.00; cart emptied | Pass | `STG-02-render-checkout-demo-notice.png`, `STG-03-render-order-1.png` |
+| Assistant | Compact Mechanical Keyboard ₱1,850 with source "Catalog product #2" (AI answer, no fallback notice) | Pass | `STG-04-render-assistant.png` |
+| Secrets | `DATABASE_URL` and `GEMINI_API_KEY` only in Render's environment settings, hidden in screenshots; not in repo or bundle | Pass | Render Environment page |
+| Privacy | Only fictional names and `@example.com` emails; checkout shows "Class demo only" notice | Pass | `STG-02-…` |
+
+**Access for the instructor:** open https://shopsmart-web-bxov.onrender.com. The free API sleeps after 15 minutes without visits, so the first page can take about a minute to load; refresh once if the products do not appear. Use only made-up details at checkout. The site has no sign-in, so the links are shared only with the instructor and the team, and the services will be suspended after grading.
 
 ## Team record
 

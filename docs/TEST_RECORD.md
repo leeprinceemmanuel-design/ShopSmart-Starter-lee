@@ -208,6 +208,10 @@ Priority follows the challenge: data exposure and broken deployment first.
 | Assistant: "Which keyboard is below ₱2,000?" | Keyboard ₱1,850 with source | AI answer, Compact Mechanical Keyboard ₱1,850, source #8 | `RC-chrome-5173-assistant.png` | Pass |
 | http://localhost:3000/api/health | `{"status":"ok"}` | `{"status":"ok"}` | `RC-chrome-5173-health.png` | Pass |
 
+### Staging smoke test on Render (11 Nov 2026)
+
+The same journey was repeated on the hosted site (https://shopsmart-web-bxov.onrender.com → https://shopsmart-api-chlw.onrender.com). All checks passed: 6 products, cart total ₱1,800, order #1, assistant answer with source #2, health `{"status":"ok"}`. Details and evidence: `RELEASE_NOTE.md`, section "Staging smoke test" (`STG-*.png`).
+
 ### Final check after fixes
 
 `npm run check` → exit 0: lint OK (both), frontend **10/10** tests (5 new), backend **31/31** tests (4 new), build OK. Log: `check-after-fix-log.txt`. No test was deleted or weakened.
