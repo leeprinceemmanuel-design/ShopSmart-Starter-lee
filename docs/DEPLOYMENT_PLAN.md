@@ -1,6 +1,6 @@
 # ShopSmart Deployment Plan (private staging)
 
-**Status:** plan only. No hosting or cloud database has been approved for this class yet, so this release is **local only**. When a platform is approved, fill in the `<…>` values below and check every command against that platform's current documentation before running it.
+**Status:** the instructor approved **Render** (free plan). The exact Render settings are in `DEPLOY_RENDER.md`. This plan explains the design; the `<…>` values become the real Render URLs.
 
 ## Diagram
 
@@ -67,7 +67,7 @@ Only in the API host's secret environment variables as `GEMINI_API_KEY`. It is r
 - The repository now contains `backend/prisma/migrations/0_init` (defect D3 fix).
 - On deploy, before the new API version starts, run `npm run db:deploy` (= `prisma migrate deploy`). It applies only committed migrations that have not run yet. It never resets the database and never deletes rows.
 - **Never** run `npm run db:migrate` (`prisma migrate dev`, a development command that can offer to reset) or `prisma migrate reset` against staging.
-- **Seeding:** `npm run db:seed` deletes all orders and products before inserting samples. Run it **once only**, on the brand-new, empty staging database, right after the first `db:deploy`. After the first order exists, never run it again.
+- **Seeding:** `npm run db:seed` deletes all orders and products before inserting samples, so it is **never** used on staging. Staging uses `npm run db:seed:if-empty` (`backend/prisma/seed-if-empty.js`), which adds the sample products only when the Product table is empty and never deletes anything. On Render it runs inside `npm run render:start`, right after `prisma migrate deploy`.
 - **Existing database created before this release** (any teammate's local DB): run `npx prisma migrate resolve --applied 0_init` once from `backend/`. Do not run `migrate dev` first: Prisma would see tables without migration history and offer to reset them.
 - Before every future migration, back up the staging database or take a snapshot.
 
@@ -80,7 +80,7 @@ Only the team and the instructor. ShopSmart has **no sign-in and no access contr
 ## Before staging goes live (checklist)
 
 - [ ] Platform approved by the instructor; fill in the `<…>` values.
-- [ ] Add `app.set('trust proxy', 1)` in `backend/src/app.js` (hosts sit behind a proxy; without it the assistant rate limit sees one IP for everyone). See limitation L6.
+- [x] `trust proxy` support added: set `TRUST_PROXY=1` on the API host (hosts sit behind a proxy; without it the assistant rate limit sees one IP for everyone). Fixes limitation L6.
 - [ ] Use a separate Gemini key for staging, with a spending limit.
 - [ ] `npm run db:deploy` succeeded; `npm run db:status` says up to date.
 - [ ] Seed only if the database is empty.

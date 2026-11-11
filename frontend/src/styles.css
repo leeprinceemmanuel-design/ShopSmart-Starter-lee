@@ -36,6 +36,7 @@ input:focus, select:focus, textarea:focus { outline: 3px solid #99f6e4; border-c
 .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin-top: .5rem; }
 .status { background: #e6fffb; border-left: 4px solid #0f766e; border-radius: .4rem; padding: .9rem 1rem; margin: 1rem 0; }
 .status.error { background: #fff1f0; border-color: #b42318; color: #7a271a; }
+.demo-notice { background: #fffaeb; border-left: 4px solid #b54708; border-radius: .4rem; padding: .7rem 1rem; margin: .5rem 0 1rem; color: #7a2e0e; }
 .details-layout, .checkout-layout, .assistant-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
 .details-icon { min-height: 420px; }
 .cart-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start; }

@@ -11,6 +11,11 @@ import { errorHandler } from './middleware/errorHandler.js';
 export function createApp() {
   const app = express();
   app.disable('x-powered-by');
+  // On a host like Render, requests pass through the host's proxy first. TRUST_PROXY=1 tells
+  // Express to read the real visitor IP from X-Forwarded-For, so the assistant rate limit
+  // counts each visitor separately. Leave it unset locally (no proxy there).
+  const proxyHops = Number(process.env.TRUST_PROXY || 0);
+  if (proxyHops > 0) app.set('trust proxy', proxyHops);
   app.use(helmet());
   // The request ID is set first, so even a request whose body cannot be read gets a traceId.
   app.use((request, response, next) => { request.id = crypto.randomUUID(); response.setHeader('X-Request-ID', request.id); next(); });

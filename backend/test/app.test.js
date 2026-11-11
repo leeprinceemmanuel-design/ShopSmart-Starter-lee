@@ -48,3 +48,15 @@ test('our own 4xx errors keep their customer message; unknown errors stay generi
   const crash = new Error('connect ECONNREFUSED 127.0.0.1:5432');
   assert.deepEqual(toSafeError(crash), { status: 500, code: 'INTERNAL_ERROR', message: 'The server could not complete the request.' });
 });
+
+test('trust proxy is off by default and turned on by TRUST_PROXY (for hosts like Render)', () => {
+  const saved = process.env.TRUST_PROXY;
+  try {
+    delete process.env.TRUST_PROXY;
+    assert.equal(createApp().get('trust proxy'), false);
+    process.env.TRUST_PROXY = '1';
+    assert.equal(createApp().get('trust proxy'), 1);
+  } finally {
+    if (saved === undefined) delete process.env.TRUST_PROXY; else process.env.TRUST_PROXY = saved;
+  }
+});

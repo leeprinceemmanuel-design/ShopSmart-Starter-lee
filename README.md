@@ -342,6 +342,7 @@ Read `docs/TEACHING_ROADMAP.md` for the weekly improvement plan.
 - `docs/RELEASE_NOTE.md`: what works, known limitations, deployment status
 - `docs/TEST_RECORD.md`: test cases with expected and observed results, defects and fixes
 - `docs/DEPLOYMENT_PLAN.md`: hosting diagram, environment settings and migration plan
+- `docs/DEPLOY_RENDER.md`: exact settings for the Render staging site
 - `docs/release-evidence/`: screenshots and logs from the final checks
 
 ## AI assistant setup
