@@ -1,0 +1,154 @@
+{
+  "site": "https://13-238-143-254.sslip.io",
+  "api": "https://13-238-143-254.sslip.io/api",
+  "ranAt": "2026-11-13T14:03:21.626Z",
+  "results": [
+    {
+      "id": "FE-01",
+      "check": "Home page loads",
+      "expected": "200 with the React root element",
+      "observed": "200",
+      "result": "PASS"
+    },
+    {
+      "id": "FE-02",
+      "check": "Direct visit to a React route (/orders/123)",
+      "expected": "200 index.html, not a 404 page",
+      "observed": "200",
+      "result": "PASS"
+    },
+    {
+      "id": "API-01",
+      "check": "/api/health (process alive)",
+      "expected": "200 {\"status\":\"ok\"}",
+      "observed": "200 {\"status\":\"ok\"}",
+      "result": "PASS"
+    },
+    {
+      "id": "API-02",
+      "check": "/api/health/ready (database reachable)",
+      "expected": "200 database ok",
+      "observed": "200 {\"status\":\"ok\",\"database\":\"ok\"}",
+      "result": "PASS"
+    },
+    {
+      "id": "API-03",
+      "check": "Plain HTTP is not served as the app",
+      "expected": "redirect (308/301) to HTTPS",
+      "observed": "308",
+      "result": "PASS"
+    },
+    {
+      "id": "API-04",
+      "check": "Other websites are not allowed by CORS",
+      "expected": "no Access-Control-Allow-Origin for https://evil.example",
+      "observed": "ACAO=https://13-238-143-254.sslip.io",
+      "result": "PASS"
+    },
+    {
+      "id": "CAT-01",
+      "check": "Products come from PostgreSQL",
+      "expected": "200 with at least 1 product",
+      "observed": "200, 6 products",
+      "result": "PASS"
+    },
+    {
+      "id": "AUTH-01",
+      "check": "Guest asks for order list",
+      "expected": "401 SIGN_IN_REQUIRED",
+      "observed": "401",
+      "result": "PASS"
+    },
+    {
+      "id": "AUTH-02",
+      "check": "Wrong password",
+      "expected": "401, no session cookie",
+      "observed": "401",
+      "result": "PASS"
+    },
+    {
+      "id": "AUTH-03",
+      "check": "Ana signs in",
+      "expected": "200 + cookie HttpOnly, SameSite=Lax, Secure",
+      "observed": "200 flags=[path=/api, httponly, secure, samesite=lax]",
+      "result": "PASS"
+    },
+    {
+      "id": "ORD-01",
+      "check": "Quantity 0 is refused",
+      "expected": "422 INVALID_ORDER",
+      "observed": "422",
+      "result": "PASS"
+    },
+    {
+      "id": "ORD-02",
+      "check": "More than stock (12 x Wireless Mouse)",
+      "expected": "409 INSUFFICIENT_STOCK, nothing saved",
+      "observed": "409",
+      "result": "PASS"
+    },
+    {
+      "id": "ORD-03",
+      "check": "Valid fictional order (1 x Wireless Mouse)",
+      "expected": "201 with an order number",
+      "observed": "201 order #3",
+      "result": "PASS"
+    },
+    {
+      "id": "ORD-04",
+      "check": "Stock went down by 1",
+      "expected": "10",
+      "observed": "10",
+      "result": "PASS"
+    },
+    {
+      "id": "AUTH-04",
+      "check": "Owner (Ana) reads her order",
+      "expected": "200",
+      "observed": "200",
+      "result": "PASS"
+    },
+    {
+      "id": "AUTH-05",
+      "check": "Guest reads Ana's order by direct API request",
+      "expected": "401",
+      "observed": "401",
+      "result": "PASS"
+    },
+    {
+      "id": "AUTH-06",
+      "check": "Another customer (Ben) reads Ana's order by direct API request",
+      "expected": "404 ORDER_NOT_FOUND",
+      "observed": "sign-in 200, read 404",
+      "result": "PASS"
+    },
+    {
+      "id": "AUTH-07",
+      "check": "Ben's order list does not include Ana's order",
+      "expected": "not listed",
+      "observed": "200, leaked=false",
+      "result": "PASS"
+    },
+    {
+      "id": "AI-01",
+      "check": "Assistant: keyboard below ₱2,000",
+      "expected": "each recommended product exists with the same price, < ₱2,000",
+      "observed": "200 source=rules #2 ₱1850 (fallback notice shown)",
+      "result": "PASS"
+    },
+    {
+      "id": "AI-02",
+      "check": "Assistant: product that does not exist",
+      "expected": "200, no recommendations",
+      "observed": "200, 0 recommended",
+      "result": "PASS"
+    },
+    {
+      "id": "AUTH-08",
+      "check": "Old cookie after sign-out",
+      "expected": "sign-out 204, then 401",
+      "observed": "204, then 401",
+      "result": "PASS"
+    }
+  ]
+}
