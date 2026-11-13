@@ -2,10 +2,10 @@
 
 | | |
 | --- | --- |
-| Status | Accepted for the classroom demo, 13 Nov 2026 |
+| Status | Accepted and deployed, 13 Nov 2026 (`https://13-238-143-254.sslip.io`) |
 | Author | Lee, Prince Emmanuel C. (individual deployment) |
 | Release | v1.2.0 |
-| Region | ap-southeast-1, Asia Pacific (Singapore): closest Region to the Philippines |
+| Region | **ap-southeast-2, Asia Pacific (Sydney).** Planned: ap-southeast-1 (Singapore), the closest Region to the Philippines. The account's Free plan project is fixed to Sydney and shows no Region selector, so Sydney was used. The demo is a little slower from the Philippines, which is acceptable for a class demo. |
 
 ## What we had to decide
 

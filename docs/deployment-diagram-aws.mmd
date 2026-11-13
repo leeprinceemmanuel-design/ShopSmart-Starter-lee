@@ -1,10 +1,10 @@
 flowchart LR
     B["Customer browser<br/>(instructor + fictional test customers)"]
 
-    subgraph AWS["AWS account · Region ap-southeast-1 (Singapore)"]
+    subgraph AWS["AWS account (Free plan) · Region ap-southeast-2 (Sydney)"]
       subgraph VPC["Default VPC · public subnet"]
         subgraph SG["Security group shopsmart-web-sg — inbound: 443 + 80 from anywhere, 22 from my IP only (3000 and 5432 closed)"]
-          subgraph EC2["EC2 instance shopsmart-demo (Ubuntu 24.04)"]
+          subgraph EC2["EC2 instance shopsmart-demo · t3.micro · Ubuntu 24.04 · 13-238-143-254.sslip.io"]
             C["Caddy :443 / :80<br/>HTTPS certificate (Let's Encrypt)<br/>serves frontend/dist + SPA rewrite"]
             A["Express API (systemd: shopsmart-api)<br/>127.0.0.1:3000 · NOT public<br/>sign-in cookie · order ownership · assistant<br/><i>secrets: /etc/shopsmart/api.env</i>"]
             D[("PostgreSQL 16<br/>127.0.0.1:5432 · NOT public<br/>Product, Order, OrderItem, User, Session")]

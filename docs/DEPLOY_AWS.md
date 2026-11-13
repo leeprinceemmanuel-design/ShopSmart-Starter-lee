@@ -1,6 +1,6 @@
 # Deploying ShopSmart to AWS (single EC2 host)
 
-Release **v1.2.0** · Region **ap-southeast-1 (Asia Pacific, Singapore)** · Layout: **one EC2 instance** running Caddy (HTTPS), the Express API and PostgreSQL.
+Release **v1.2.0** · Region **ap-southeast-2 (Asia Pacific, Sydney)** · Layout: **one EC2 instance** running Caddy (HTTPS), the Express API and PostgreSQL.
 Why this layout: see `AWS_DECISION_RECORD.md`. Picture: `deployment-diagram-aws.png`.
 
 > **Golden rules.** Fictional data only. Never paste the database password, the demo password, a Gemini key or the `.pem` key into Git, chat or a screenshot. Write down every resource you create in `AWS_RESOURCE_REGISTER.md`.
@@ -23,7 +23,7 @@ Placeholders used below:
    - Write down: plan (**Free** or **Paid**), **credits remaining**, **credit/plan expiry date**.
    - Take a screenshot → blur the account ID and email → save as `docs/release-evidence/AWS-00-account-plan-credits.png`.
 3. **Budgets → Create budget → "Zero spend budget"** (or a monthly cost budget of US$1) with your email. You get an email if anything starts costing money.
-4. Top-right Region selector: choose **Asia Pacific (Singapore) ap-southeast-1**. Every resource below goes in this Region.
+4. Use **one Region** for every resource below. The plan was Singapore (ap-southeast-1), but this account's Free plan *project* ("Lift Off Soon") is fixed to **Asia Pacific (Sydney) ap-southeast-2**, and its console shows no Region selector. So everything was created in **ap-southeast-2**. Check `region=` in the console address bar.
 
 ## Step 1. Launch the EC2 instance
 
@@ -52,8 +52,10 @@ Screenshot the security group's inbound rules → `AWS-01-security-group.png`.
 cd C:\path\to\folder\with\key
 icacls .\shopsmart-key.pem /inheritance:r
 icacls .\shopsmart-key.pem /grant:r "$($env:USERNAME):(R)"
-ssh -i .\shopsmart-key.pem ubuntu@<PUBLIC_IP>
+ssh -o ServerAliveInterval=60 -i .\shopsmart-key.pem ubuntu@<PUBLIC_IP>
 ```
+
+The key downloads into `Downloads`. Move it first: `Move-Item "$HOME\Downloads\shopsmart-key.pem" "$HOME\.ssh\"`. `ServerAliveInterval=60` stops an idle SSH window from dropping (`Connection aborted`).
 
 Type `yes` the first time. The prompt changes to `ubuntu@ip-…:~$`. **All the next steps run on the server.**
 
@@ -159,10 +161,10 @@ In the log, look for: `All migrations have been successfully applied.` (or `No p
 curl -s http://127.0.0.1:3000/api/health/ready      # {"status":"ok","database":"ok"}
 
 # Migration history (evidence for the deployment plan): both 0_init and 1_add_users_sessions_order_owner applied
-sudo -u shopsmart bash -c 'set -a; source /etc/shopsmart/api.env; set +a; cd /opt/shopsmart/backend && /opt/shopsmart/node_modules/.bin/prisma migrate status' | tee /tmp/aws-migrate-status.txt
+sudo -u shopsmart bash -c 'set -a; source /etc/shopsmart/api.env; set +a; cd /opt/shopsmart/backend && /opt/shopsmart/node_modules/.bin/prisma migrate status' > ~/aws-migrate-status.txt 2>&1; tail -2 ~/aws-migrate-status.txt
 ```
 
-Copy `/tmp/aws-migrate-status.txt` into `docs/release-evidence/` later. It contains no secrets, but check it before you commit it.
+Save it in your home folder, not `/tmp`, because `/tmp` is emptied when the server reboots. Copy it to your PC later with `scp` (Step 10). It contains no secrets.
 
 Create the two **fictional** test customers (Ana and Ben). The password is printed **once**. Save it privately (not in Git, not in a screenshot):
 
@@ -175,9 +177,11 @@ sudo -u shopsmart bash -c 'set -a; source /etc/shopsmart/api.env; set +a; cd /op
 ```bash
 cd /opt/shopsmart
 sed "s/SHOPSMART_HOST/${SITE_HOST}/" deploy/Caddyfile | sudo tee /etc/caddy/Caddyfile > /dev/null
-sudo mkdir -p /var/log/caddy && sudo chown caddy:caddy /var/log/caddy
 sudo caddy validate --config /etc/caddy/Caddyfile
-sudo systemctl reload caddy
+# validate runs as root and creates the access log owned by root. Give the folder back to Caddy
+# AFTER validating, or the reload fails with "open /var/log/caddy/shopsmart-access.log: permission denied".
+sudo mkdir -p /var/log/caddy && sudo chown -R caddy:caddy /var/log/caddy
+sudo systemctl restart caddy
 sudo journalctl -u caddy -n 40 --no-pager | grep -iE "certificate obtained|error"
 ```
 
@@ -193,7 +197,7 @@ Open `https://<SITE_HOST>` in a browser. The padlock should show a valid certifi
 On **your own PC**, in the project folder (Node 22 is already installed):
 
 ```powershell
-$env:DEMO_PASSWORD="<the demo password from Step 7>"
+$env:DEMO_PASSWORD="<the demo password from Step 7>"   # the real SERVER password, not this text
 node deploy/smoke-test.mjs https://<SITE_HOST> --out docs/release-evidence/aws-smoke-test.json
 Remove-Item Env:DEMO_PASSWORD
 ```
@@ -208,7 +212,7 @@ Then do the **browser checks** in a fresh Incognito window and take the screensh
 sudo reboot
 ```
 
-Wait 1–2 minutes, then from your PC run the smoke test again with `--out docs/release-evidence/aws-smoke-after-reboot.json`.
+Wait 1–2 minutes, then from your PC (inside the project folder) run the smoke test again with `--out docs/release-evidence/aws-smoke-after-reboot.json`.
 Sign in as Ana in the browser: **My Orders still shows the order from Step 9** (data survived the restart).
 
 Back on the server:
@@ -219,7 +223,15 @@ sudo journalctl -u shopsmart-api -b --no-pager | tail -20      # started automat
 sudo journalctl -u shopsmart-api --no-pager | grep -iE "postgresql://|password=|AIza|GEMINI_API_KEY" && echo "SECRET FOUND IN LOG" || echo "OK: no secrets in API log"
 ```
 
-Save the last 20 log lines as `docs/release-evidence/aws-api-log-after-reboot.txt`. Read it first and remove anything private.
+Save the log and copy both evidence files to your PC:
+
+```bash
+sudo journalctl -u shopsmart-api -b --no-pager | tail -20 > ~/aws-api-log-after-reboot.txt
+```
+```powershell
+scp -i $HOME\.ssh\shopsmart-key.pem "ubuntu@<PUBLIC_IP>:~/aws-*.txt" docs/release-evidence/
+```
+Read them before committing. They hold request lines only (method, path, status, time).
 
 ## Step 11. Updating the code later
 
@@ -238,7 +250,7 @@ sudo systemctl restart shopsmart-api          # runs "prisma migrate deploy" bef
 
 1. EC2 → Instances → `shopsmart-demo` → **Terminate**. (Check that the root volume has "Delete on termination = Yes"; then the disk and the database are deleted with it.)
 2. EC2 → Security Groups → delete `shopsmart-web-sg`. Key Pairs → delete `shopsmart-key`, and delete the `.pem` file.
-3. Check EC2 → **Volumes**, **Snapshots** and **Elastic IPs** are empty in ap-southeast-1.
+3. Check EC2 → **Volumes**, **Snapshots** and **Elastic IPs** have nothing left from ShopSmart in ap-southeast-2. Leave the SAM10 `libralink-server` resources alone; they belong to another project.
 4. Delete the Gemini staging key if you made one.
 5. A day later, open Billing and confirm nothing is still using credits. Update `AWS_RESOURCE_REGISTER.md` with the removal date.
 
