@@ -7,14 +7,16 @@ No passwords, keys, account IDs or connection strings are kept here.
 | Item | Value |
 | --- | --- |
 | Account plan | **Free plan** (checked 13 Nov 2026) |
-| Credits remaining on 13 Nov 2026 | **US$137** |
-| Plan / credit expiry | **178 days left** on 13 Nov 2026, so about **10 May 2027** |
+| Credits remaining on 13 Nov 2026 | **US$137** before the deployment → **US$136.85** at 22:17, after deploying and testing |
+| Amount due | **US$0.00** ("No charges while on the free plan") |
+| Month-to-date cost of project "Lift Off Soon" | **US$3.02**, covered by credits. This includes the SAM10 `libralink-server` resources in the same project, not only ShopSmart. |
+| Plan / credit expiry | **8 May 2027** (178 days left on 13 Nov 2026) |
 | Root MFA on? | **Yes** |
-| Budget alert created? | Yes / No (fill in: name ________) |
+| Budget alert created? | Not recorded. The Free plan shows "No charges while on the free plan" and usage is covered by credits; credits were checked before and after the deployment instead. |
 | AWS project | Free plan project "Lift Off Soon", fixed to Region **ap-southeast-2 (Sydney)** |
 | Who else can see these resources | Project members: the owner (me) and my SAM10 partner, added through the Team page for SAM10. ShopSmart is my individual work; the partner did not change these resources. |
 | Other resources in the same project | `libralink-server` (SAM10 project). **Not part of ShopSmart.** Left untouched. |
-| Evidence | `release-evidence/AWS-00-account-plan-credits.png` (account ID and email covered) |
+| Evidence | `release-evidence/AWS-16-billing-after-deploy.png` (Billing page; no account ID or email shown) |
 
 ## Resources created for ShopSmart
 
