@@ -13,6 +13,13 @@ export const orderSchema = z.object({
   )
 });
 
+// Emails are compared in lower case, so "Ana.Demo@Example.com" finds the same account.
+// The password length cap stops someone from sending a huge string to the hash function.
+export const signInSchema = z.object({
+  email: z.email().max(254).transform((value) => value.toLowerCase()),
+  password: z.string().min(1).max(200)
+});
+
 export const assistantQuestionSchema = z.object({
   question: z.string().trim().min(3).max(300)
 });

@@ -1,0 +1,36 @@
+# File: deploy/Caddyfile  ->  copied to /etc/caddy/Caddyfile on the EC2 server
+# Replace SHOPSMART_HOST with the site's host name, for example 13-229-45-67.sslip.io
+# (setup step 8 in docs/DEPLOY_AWS.md does this for you with sed).
+#
+# Caddy is the ONLY public entry point (ports 80 and 443):
+#   - it gets and renews a free HTTPS certificate automatically (Let's Encrypt)
+#   - /api/* is passed to Express, which listens only on 127.0.0.1:3000 (not public)
+#   - everything else is the built React app from frontend/dist
+
+SHOPSMART_HOST {
+	encode gzip
+
+	handle /api/* {
+		reverse_proxy 127.0.0.1:3000
+	}
+
+	handle {
+		root * /opt/shopsmart/frontend/dist
+		# Single-page-app rewrite: /cart, /orders/12 etc. are React routes, not files,
+		# so serve index.html and let React Router show the right page.
+		try_files {path} /index.html
+		file_server
+	}
+
+	header {
+		# Browsers must use HTTPS for this site from now on.
+		Strict-Transport-Security "max-age=86400"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	log {
+		output file /var/log/caddy/shopsmart-access.log
+	}
+}

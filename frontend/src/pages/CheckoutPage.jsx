@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import StatusMessage from '../components/StatusMessage.jsx';
 import { useCart } from '../context/CartContext.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 import { api } from '../services/api.js';
 // Reuse the subtotal rule the cart total already uses (price x quantity).
 import { calculateItemSubtotal } from '../utils/cart.js';
@@ -11,7 +12,10 @@ export default function CheckoutPage() {
   // "cart" and "total" come straight from the shared cart.
   // This page does not keep its own copy of the items.
   const { cart, total, clearCart } = useCart();
-  const [form, setForm] = useState({ customerName: '', email: '', address: '' });
+  // This page is wrapped in RequireSignIn, so "user" is always set here.
+  // Name and email start with the test account's details; the shopper can still edit them.
+  const { user, refreshUser } = useAuth();
+  const [form, setForm] = useState({ customerName: user?.name ?? '', email: user?.email ?? '', address: '' });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [order, setOrder] = useState(null);
@@ -33,6 +37,8 @@ export default function CheckoutPage() {
       clearCart();
     } catch (caught) {
       setError(caught.message);
+      // 401: the session expired. Re-check, so RequireSignIn sends the shopper to sign in (the cart is kept).
+      if (caught.status === 401) refreshUser();
     } finally {
       setSubmitting(false);
     }
@@ -43,6 +49,7 @@ export default function CheckoutPage() {
       <p className="eyebrow">ORDER RECEIVED</p>
       <h1>Thank you, {order.customerName}!</h1>
       <p>Your simulated order number is <strong>#{order.id}</strong>.</p>
+      <p><Link to={`/orders/${order.id}`}>View it in My Orders</Link></p>
       <p>Total: <strong>₱{Number(order.total).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</strong></p>
       <Link className="button" to="/">Continue shopping</Link>
     </section>
@@ -54,7 +61,7 @@ export default function CheckoutPage() {
     <section className="checkout-layout">
       <form onSubmit={submitOrder}>
         <p className="eyebrow">SIMULATED CHECKOUT</p><h1>Delivery information</h1>
-        {/* Privacy safeguard: the site has no sign-in, so shoppers are told not to type real details. */}
+        {/* Privacy safeguard: this is a class demo with fictional test accounts, so shoppers are told not to type real details. */}
         <p className="demo-notice">Class demo only: please use a made-up name, email and address. No real orders are shipped.</p>
         <StatusMessage type="error">{error}</StatusMessage>
         <label>Full name<input name="customerName" value={form.customerName} onChange={updateField} minLength="2" maxLength="80" required /></label>

@@ -60,3 +60,84 @@ test('trust proxy is off by default and turned on by TRUST_PROXY (for hosts like
     if (saved === undefined) delete process.env.TRUST_PROXY; else process.env.TRUST_PROXY = saved;
   }
 });
+
+// ---- Release 1.2: sign-in, order ownership and database readiness ----
+// A guest sends no cookie, so these requests are refused before any database call.
+
+async function withAppServer(app, run) {
+  const server = app.listen(0);
+  await new Promise((resolve) => server.once('listening', resolve));
+  try { return await run(`http://127.0.0.1:${server.address().port}`); }
+  finally { await new Promise((resolve) => server.close(resolve)); }
+}
+
+test('a guest gets 401 for private order routes and for /api/auth/me', async () => {
+  await withServer(async (url) => {
+    for (const [method, path] of [['GET', '/api/orders'], ['GET', '/api/orders/1'], ['GET', '/api/auth/me']]) {
+      const response = await fetch(`${url}${path}`, { method });
+      assert.equal(response.status, 401, `${method} ${path}`);
+      assert.equal((await response.json()).error.code, 'SIGN_IN_REQUIRED');
+    }
+  });
+});
+
+test('a guest cannot place an order, even with a valid body', async () => {
+  await withServer(async (url) => {
+    const response = await fetch(`${url}/api/orders`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ customerName: 'Juan Dela Test', email: 'juan.test@example.com', address: '123 Sample Street, Test City', items: [{ productId: 1, quantity: 1 }] })
+    });
+    assert.equal(response.status, 401);
+  });
+});
+
+test('sign-in with a malformed body is refused with 422 and no cookie', async () => {
+  await withServer(async (url) => {
+    const response = await fetch(`${url}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'not-an-email', password: '' }) });
+    assert.equal(response.status, 422);
+    assert.equal(response.headers.get('set-cookie'), null);
+  });
+});
+
+test('CORS allows credentials only for FRONTEND_URL', async () => {
+  await withServer(async (url) => {
+    const allowed = await fetch(`${url}/api/health`, { headers: { Origin: 'http://localhost:5173' } });
+    assert.equal(allowed.headers.get('access-control-allow-origin'), 'http://localhost:5173');
+    assert.equal(allowed.headers.get('access-control-allow-credentials'), 'true');
+    const other = await fetch(`${url}/api/health`, { headers: { Origin: 'https://evil.example' } });
+    assert.notEqual(other.headers.get('access-control-allow-origin'), 'https://evil.example');
+  });
+});
+
+test('/api/health/ready is 200 when the database answers', async () => {
+  await withAppServer(createApp({ checkDatabase: async () => {} }), async (url) => {
+    const response = await fetch(`${url}/api/health/ready`);
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), { status: 'ok', database: 'ok' });
+  });
+});
+
+test('/api/health/ready is 503 when the database is down, and logs no connection string', async () => {
+  const secretUrl = 'postgresql://shopsmart_user:VerySecret@127.0.0.1:5432/shopsmart';
+  let status;
+  let body;
+  const logged = await captureErrors(() => withAppServer(
+    createApp({ checkDatabase: async () => { throw Object.assign(new Error(`Can't reach database server at ${secretUrl}`), { code: 'P1001' }); } }),
+    async (url) => {
+      const response = await fetch(`${url}/api/health/ready`);
+      status = response.status;
+      body = await response.json();
+    }
+  ));
+  assert.equal(status, 503);
+  assert.deepEqual(body, { status: 'error', database: 'unreachable' });
+  assert.ok(logged.includes('P1001'), 'the log names the error code so it can be traced');
+  assert.ok(!logged.includes('VerySecret') && !JSON.stringify(body).includes('VerySecret'));
+});
+
+test('/api/health still answers without touching the database (liveness)', async () => {
+  await withAppServer(createApp({ checkDatabase: async () => { throw new Error('should not be called'); } }), async (url) => {
+    const response = await fetch(`${url}/api/health`);
+    assert.equal(response.status, 200);
+  });
+});

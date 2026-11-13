@@ -1,0 +1,36 @@
+# File: deploy/shopsmart-api.service  ->  copied to /etc/systemd/system/shopsmart-api.service
+# systemd keeps the Express API running:
+#   - starts it when the server boots (WantedBy=multi-user.target)
+#   - restarts it 5 seconds after a crash (Restart=on-failure)
+#   - sends its console output to the journal:  journalctl -u shopsmart-api
+# Secrets come from /etc/shopsmart/api.env, which is NOT in Git and only root and
+# the shopsmart user can read.
+
+[Unit]
+Description=ShopSmart Express API
+After=network-online.target postgresql.service
+Wants=network-online.target postgresql.service
+
+[Service]
+Type=simple
+User=shopsmart
+Group=shopsmart
+WorkingDirectory=/opt/shopsmart/backend
+EnvironmentFile=/etc/shopsmart/api.env
+Environment=CHECKPOINT_DISABLE=1
+Environment=PRISMA_HIDE_UPDATE_MESSAGE=1
+# Before every start: apply committed migrations (never resets, never deletes rows),
+# then add the sample products ONLY if the Product table is empty.
+ExecStartPre=/opt/shopsmart/node_modules/.bin/prisma migrate deploy --schema /opt/shopsmart/backend/prisma/schema.prisma
+ExecStartPre=/usr/bin/node /opt/shopsmart/backend/prisma/seed-if-empty.js
+ExecStart=/usr/bin/node /opt/shopsmart/backend/src/server.js
+Restart=on-failure
+RestartSec=5
+# Basic hardening: the process cannot gain extra privileges or write to system folders.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

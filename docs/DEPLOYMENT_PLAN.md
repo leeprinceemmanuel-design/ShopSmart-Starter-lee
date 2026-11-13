@@ -1,6 +1,6 @@
 # ShopSmart Deployment Plan (private staging)
 
-**Status:** deployed to **Render** (free plan) on 11 Nov 2026 – frontend https://shopsmart-web-bxov.onrender.com, API https://shopsmart-api-chlw.onrender.com. Staging smoke test: see `RELEASE_NOTE.md`. The instructor approved Render. The exact Render settings are in `DEPLOY_RENDER.md`. This plan explains the design; the `<…>` values become the real Render URLs.
+**Status:** deployed to **Render** (free plan) on 11 Nov 2026 – frontend https://shopsmart-web-bxov.onrender.com, API https://shopsmart-api-chlw.onrender.com. Staging smoke test: see `RELEASE_NOTE_v1.1.0.md`. **The AWS release (v1.2.0) is described in `DEPLOY_AWS.md` and `AWS_DECISION_RECORD.md`.**. The instructor approved Render. The exact Render settings are in `DEPLOY_RENDER.md`. This plan explains the design; the `<…>` values become the real Render URLs.
 
 ## Diagram
 
