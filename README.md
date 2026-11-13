@@ -333,17 +333,45 @@ Confirm that the front end uses http://localhost:5173 and that `FRONTEND_URL=htt
 | `npm run db:deploy` | Apply committed migrations without resetting data (staging/production) |
 | `npm run db:status` | Show whether the database has every committed migration |
 | `npm run db:seed` | Reset and insert sample data |
+| `npm run users:demo` | Create or reset the fictional test customers Ana and Ben (prints a demo password once) |
 | `npm run db:studio` | Open the Prisma database viewer |
 
 Read `docs/TEACHING_ROADMAP.md` for the weekly improvement plan.
 
 ## Release documents
 
-- `docs/RELEASE_NOTE.md`: what works, known limitations, deployment status
+- `docs/RELEASE_NOTE.md`: v1.2.0 (AWS) what works, known limitations, deployment status
+- `docs/DEPLOY_AWS.md`: step-by-step AWS EC2 deployment (Caddy HTTPS + Express + PostgreSQL)
+- `docs/AWS_DECISION_RECORD.md`, `docs/AWS_RESOURCE_REGISTER.md`, `docs/AWS_VERIFICATION.md`, `docs/deployment-diagram-aws.png`
+- `docs/RELEASE_NOTE_v1.1.0.md`: previous release (Render staging)
 - `docs/TEST_RECORD.md`: test cases with expected and observed results, defects and fixes
 - `docs/DEPLOYMENT_PLAN.md`: hosting diagram, environment settings and migration plan
 - `docs/DEPLOY_RENDER.md`: exact settings for the Render staging site
 - `docs/release-evidence/`: screenshots and logs from the final checks
+
+## Sign-in and My Orders (release 1.2)
+
+Checkout and **My Orders** need a signed-in test customer.
+
+1. Apply the new migration. On a database that already has data, this only adds tables:
+
+   ```powershell
+   npm run db:migrate
+   ```
+
+2. Create the two fictional customers. The command prints a demo password once:
+
+   ```powershell
+   npm run users:demo
+   ```
+
+3. In the app, select **Sign in** and use `ana.demo@example.com` or `ben.demo@example.com` with that password.
+4. Check the readiness route: http://localhost:3000/api/health/ready should show `{"status":"ok","database":"ok"}`.
+5. Optional automatic check, with `npm run dev` running:
+
+   ```powershell
+   $env:DEMO_PASSWORD="<printed password>"; node deploy/smoke-test.mjs http://localhost:5173 http://localhost:3000/api
+   ```
 
 ## AI assistant setup
 

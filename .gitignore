@@ -8,3 +8,7 @@ coverage/
 .vscode/
 backend/prisma/*.db
 backend/prisma/*.db-journal
+
+# AWS SSH keys and server secret files must never be committed
+*.pem
+api.env

@@ -68,10 +68,14 @@ Use the real URLs Render gives you; if a name is taken, Render adds letters to i
 
 ## 4. Staging smoke test
 
-Repeat the table in `DEPLOYMENT_PLAN.md` ("Staging smoke test") with the real URLs and record date, URLs and results in `RELEASE_NOTE.md`.
+Repeat the table in `DEPLOYMENT_PLAN.md` ("Staging smoke test") with the real URLs and record date, URLs and results in `RELEASE_NOTE_v1.1.0.md`.
 
 ## Privacy
 
 - No sign-in exists, so the site is reachable by anyone with the link: share the links only with the instructor and team, and suspend or delete the services after grading.
 - The checkout page shows "Class demo only: please use a made-up name, email and address."
 - Only fictional data in demos. Never paste the database URL or Gemini key in chat, screenshots or the repository.
+
+## Note for release 1.2 (sign-in)
+
+The Render layout puts the frontend and the API on two different `onrender.com` sites. The v1.2 sign-in cookie is `SameSite=Lax`, so the browser will **not** send it from the static site to the API, and sign-in will not work on this Render layout. The v1.2 release is deployed on AWS with the site and API on one HTTPS address instead (`DEPLOY_AWS.md`). Do not "fix" Render by setting `COOKIE_SAMESITE=none` without adding CSRF protection.

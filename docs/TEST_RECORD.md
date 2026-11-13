@@ -210,7 +210,7 @@ Priority follows the challenge: data exposure and broken deployment first.
 
 ### Staging smoke test on Render (11 Nov 2026)
 
-The same journey was repeated on the hosted site (https://shopsmart-web-bxov.onrender.com → https://shopsmart-api-chlw.onrender.com). All checks passed: 6 products, cart total ₱1,800, order #1, assistant answer with source #2, health `{"status":"ok"}`. Details and evidence: `RELEASE_NOTE.md`, section "Staging smoke test" (`STG-*.png`).
+The same journey was repeated on the hosted site (https://shopsmart-web-bxov.onrender.com → https://shopsmart-api-chlw.onrender.com). All checks passed: 6 products, cart total ₱1,800, order #1, assistant answer with source #2, health `{"status":"ok"}`. Details and evidence: `RELEASE_NOTE_v1.1.0.md`, section "Staging smoke test" (`STG-*.png`).
 
 ### Final check after fixes
 

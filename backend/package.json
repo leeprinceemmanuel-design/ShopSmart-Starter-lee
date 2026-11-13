@@ -14,6 +14,7 @@
     "db:status": "prisma migrate status",
     "db:seed": "prisma db seed",
     "db:seed:if-empty": "node prisma/seed-if-empty.js",
+    "users:demo": "node prisma/create-demo-customers.js",
     "render:start": "prisma migrate deploy && node prisma/seed-if-empty.js && node src/server.js",
     "db:studio": "prisma studio"
   },

@@ -8,6 +8,46 @@ Start the application with `npm run dev`, then send these requests through Bruno
 GET http://localhost:3000/api/health
 ```
 
+## Readiness (also checks PostgreSQL)
+
+```http
+GET http://localhost:3000/api/health/ready
+```
+
+`200 {"status":"ok","database":"ok"}`, or `503 {"status":"error","database":"unreachable"}` when the database cannot be reached.
+
+## Sign in (fictional test customer)
+
+```http
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ana.demo@example.com",
+  "password": "<demo password printed by npm run users:demo>"
+}
+```
+
+`200 {"user":{"id":1,"name":"Ana Demo","email":"ana.demo@example.com"}}` plus a `Set-Cookie: shopsmart_session=…; Path=/api; HttpOnly; SameSite=Lax` header. A wrong email or password gets `401 INVALID_CREDENTIALS` (same message for both). Bruno keeps the cookie for the next requests.
+
+```http
+GET http://localhost:3000/api/auth/me
+POST http://localhost:3000/api/auth/logout
+```
+
+## My orders (sign-in required)
+
+```http
+GET http://localhost:3000/api/orders
+GET http://localhost:3000/api/orders/12
+```
+
+- No cookie → `401 SIGN_IN_REQUIRED`
+- Your own order → `200`
+- Someone else's order → `404 ORDER_NOT_FOUND` (the API does not even confirm that it exists)
+
+`POST /api/orders` (below) also requires sign-in now. The owner is taken from the session, never from the body.
+
 ## Product list
 
 ```http

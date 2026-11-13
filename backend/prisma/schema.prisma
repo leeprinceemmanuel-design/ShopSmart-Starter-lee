@@ -21,15 +21,43 @@ model Product {
   orderItems  OrderItem[]
 }
 
+// A fictional test customer who can sign in. Only a password HASH is stored.
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  orders       Order[]
+  sessions     Session[]
+}
+
+// One row per signed-in browser. "id" is the SHA-256 hash of the cookie token,
+// so a copy of the database cannot be used to sign in as someone.
+model Session {
+  id        String   @id
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
 model Order {
   id           Int         @id @default(autoincrement())
+  // Owner of the order. Optional so orders made before sign-in existed are kept.
+  userId       Int?
   customerName String
   email        String
   address      String
   status       String      @default("PENDING")
   total        Decimal     @db.Decimal(10, 2)
   createdAt    DateTime    @default(now())
+  user         User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   items        OrderItem[]
+
+  @@index([userId])
 }
 
 model OrderItem {

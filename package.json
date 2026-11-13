@@ -13,6 +13,7 @@
     "db:deploy": "npm run db:deploy --workspace backend",
     "db:status": "npm run db:status --workspace backend",
     "db:seed": "npm run db:seed --workspace backend",
+    "users:demo": "npm run users:demo --workspace backend",
     "db:studio": "npm run db:studio --workspace backend"
   },
   "devDependencies": {

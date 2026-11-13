@@ -1,4 +1,6 @@
 // File: frontend/src/services/api.js
+// Locally: http://localhost:3000/api. On the EC2 server the site and API share one address,
+// so the build uses VITE_API_URL=/api (a relative path, no host name inside the bundle).
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 // Plain messages for failures that have no message from the server.
@@ -29,6 +31,8 @@ async function request(path, options = {}) {
   try {
     response = await fetch(`${API_URL}${path}`, {
       ...options,
+      // Send and accept the HttpOnly sign-in cookie. The page's JavaScript never reads it.
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json', ...options.headers }
     });
   } catch (caught) {
@@ -49,6 +53,11 @@ export const api = {
   getProducts: (query = '') => request(`/products${query ? `?search=${encodeURIComponent(query)}` : ''}`),
   getProduct: (id) => request(`/products/${id}`),
   createOrder: (order) => request('/orders', { method: 'POST', body: JSON.stringify(order) }),
+  getMyOrders: () => request('/orders'),
+  getMyOrder: (id) => request(`/orders/${id}`),
+  signIn: (email, password) => request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  signOut: () => request('/auth/logout', { method: 'POST' }),
+  getCurrentUser: () => request('/auth/me'),
   askAssistant: (question) => request('/assistant/questions', {
     // The browser stops waiting after 20 seconds, so the page can never load forever.
     method: 'POST', body: JSON.stringify({ question }), signal: AbortSignal.timeout(20000)

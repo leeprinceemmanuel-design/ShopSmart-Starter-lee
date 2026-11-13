@@ -36,3 +36,27 @@ describe('api error messages', () => {
     await expect(api.createOrder({})).rejects.toMatchObject({ message: 'Check the customer and cart information. Please check: email address.' });
   });
 });
+
+describe('sign-in requests', () => {
+  it('every request includes the sign-in cookie (credentials: include)', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse(200, { orders: [] }));
+    vi.stubGlobal('fetch', fetchMock);
+    await api.getMyOrders();
+    expect(fetchMock.mock.calls[0][0]).toMatch(/\/orders$/);
+    expect(fetchMock.mock.calls[0][1]).toMatchObject({ credentials: 'include' });
+  });
+
+  it('signIn posts the email and password to /auth/login', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse(200, { user: { id: 1, name: 'Ana Demo', email: 'ana.demo@example.com' } }));
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await api.signIn('ana.demo@example.com', 'secret-pass');
+    expect(fetchMock.mock.calls[0][0]).toMatch(/\/auth\/login$/);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ email: 'ana.demo@example.com', password: 'secret-pass' });
+    expect(result.user.name).toBe('Ana Demo');
+  });
+
+  it('a 401 keeps its status so the page can send the shopper to sign in', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(401, { error: { code: 'SIGN_IN_REQUIRED', message: 'Please sign in to continue.' } })));
+    await expect(api.getMyOrder(5)).rejects.toMatchObject({ status: 401, code: 'SIGN_IN_REQUIRED' });
+  });
+});
