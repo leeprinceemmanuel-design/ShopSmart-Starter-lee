@@ -7,7 +7,7 @@
 | Release type | **Hosted** on AWS |
 | Site URL | **https://13-238-143-254.sslip.io** |
 | Tested URLs | `/`, `/cart` and `/orders/<id>` opened directly, `/api/health`, `/api/health/ready`, `/api/products`, `/api/auth/login`, `/api/auth/me`, `/api/auth/logout`, `/api/orders`, `/api/orders/<id>`, `/api/assistant/questions`, plus `http://` → `https://` |
-| AWS account plan | **Free plan**: US$137 credits and 178 days left on 13 Nov 2026 (about 10 May 2027). Credits after the demo: ____ |
+| AWS account plan | **Free plan**, plan ends **8 May 2027** (178 days left). Credits: **US$137 before → US$136.85 after** deploying and testing (13 Nov 2026, 22:17). Amount due: **US$0.00**. Evidence: `release-evidence/AWS-16-billing-after-deploy.png` |
 | AWS services | **Amazon EC2** (one `t3.micro`, Ubuntu 24.04), **Amazon EBS** (20 GiB gp3 root volume), **VPC security group** `shopsmart-web-sg`, one auto-assigned **public IPv4** address. No RDS and no Amplify (see `AWS_DECISION_RECORD.md`). |
 | Region | **ap-southeast-2, Asia Pacific (Sydney)**. The account's Free plan project is fixed to this Region. |
 | On the instance | Caddy (HTTPS from Let's Encrypt, static files, reverse proxy) → Express API (systemd `shopsmart-api`, 127.0.0.1:3000) → PostgreSQL 16 (127.0.0.1:5432) |
@@ -43,7 +43,7 @@ Full table with expected and observed results: `AWS_VERIFICATION.md`.
 | Simulated checkout (201 / 422 / 409, stock decreases) | **Pass** |
 | Assistant (grounded answer / no match / provider-failure fallback) | **Pass** |
 | Restart and logs (21/21 after reboot, no secrets in log) | **Pass** |
-| Secrets and credits | **Pass** (credits after the demo: fill in) |
+| Secrets and credits | **Pass** (credits US$136.85 left, amount due US$0.00) |
 
 Two problems were found and fixed during deployment: a stale local migration history (F1) and Caddy's log file permission (F2). Details are in `AWS_VERIFICATION.md`, "Failed cases".
 
